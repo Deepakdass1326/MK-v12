@@ -1,76 +1,182 @@
 # MK-VII — Precision Platform
 
-A scroll-driven product site for a sniper rifle, built with React + Vite,
-`@react-three/fiber` (Three.js), and GSAP/ScrollTrigger for smoothing.
+> A high-performance, scroll-driven 3D product showcase for the MK-VII sniper rifle. Built with React, Three.js, and GSAP — designed to feel like a cinematic weapons reveal.
 
-## Run it
+---
+
+## ✨ Features
+
+- 🎯 **Scroll-driven 3D animation** — The rifle moves, rotates, and zooms as you scroll through the page, driven by GSAP ScrollTrigger
+- 🔭 **Live range readout** — "Range to target" counter counts down from 1200M → 0M in real-time as you scroll
+- 🎨 **Interactive finish customizer** — Switch between 4 surface finishes (Gunmetal, Desert Tan, Arctic White, Copper Shot) with smooth GSAP color tweens
+- 🖱️ **Custom reticle cursor** — Crosshair cursor that trails the pointer with `gsap.quickTo` for a buttery-smooth feel (desktop only)
+- 💎 **Glassmorphism UI** — Frosted glass header with blur effects and premium dark aesthetic
+- ⚡ **Blazing fast** — 3D model optimized from 17.8 MB → ~290 KB via `@gltf-transform`
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Role |
+|---|---|
+| React 19 + Vite | UI framework & build tool |
+| Three.js + `@react-three/fiber` | 3D rendering engine |
+| `@react-three/drei` | Orbit controls, loaders & helpers |
+| GSAP + ScrollTrigger | Scroll animations & smooth transitions |
+| CSS Custom Properties | Design tokens & theming |
+| Google Fonts | Big Shoulders Display, Inter, Space Mono |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm
+
+### Install & Run
 
 ```bash
+# Clone the repository
+git clone https://github.com/Deepakdass1326/MK-v12.git
+cd MK-v12
+
+# Install dependencies
 npm install
+
+# Start the dev server
 npm run dev
 ```
 
-Open the printed local URL. For a production build:
+Open the local URL printed in your terminal (usually `http://localhost:5173`).
+
+### Production Build
 
 ```bash
-npm run build
-npm run preview
+npm run build      # Compiles & bundles for production → /dist
+npm run preview    # Locally preview the production build
 ```
 
-## What's inside
+---
 
-- **Header** — fixed nav, blurred glass background.
-- **Hero + Features (`HeroFeatureScene.jsx`)** — one pinned, scroll-scrubbed
-  scene. GSAP drives the rifle's position/rotation/scale as you scroll so the
-  camera appears to move to the optic, barrel, then stock/trigger, with a
-  live "range to target" readout counting down from 1200M to 0M. `scrub: 1`
-  on the ScrollTrigger is what gives the motion its smoothing/lag.
-- **Specs strip** — a plain spec-sheet readout (caliber, range, weight, etc).
-- **Customize (`CustomizeSection.jsx`)** — an independent, orbit-controlled
-  viewer with 4 finishes (Gunmetal, Desert Tan, Arctic White, Copper Shot).
-  Clicking a swatch tweens the material's color with GSAP for a smooth
-  cross-fade between finishes.
-- **Reticle** — a custom crosshair cursor that trails the pointer using
-  `gsap.quickTo`, another smoothing touch (desktop only).
+## 📁 Project Structure
 
-## Editing the rifle's pose per scroll stage
+```
+MK-v12/
+├── public/
+│   ├── models/
+│   │   └── sniper_rifle.glb        # Optimized 3D rifle model (~290 KB)
+│   ├── *.jpg                       # Skin/finish textures
+│   ├── favicon.svg
+│   └── icons.svg
+├── src/
+│   ├── components/
+│   │   ├── Header.jsx              # Fixed nav with glass blur effect
+│   │   ├── HeroFeatureScene.jsx    # Pinned scroll-driven 3D scene
+│   │   ├── SpecsStrip.jsx          # Spec sheet readout
+│   │   ├── CustomizeSection.jsx    # Finish/skin selector with orbit viewer
+│   │   ├── RifleModel.jsx          # GLB loader + material exposure
+│   │   ├── ResponsiveRifleViewer.jsx
+│   │   ├── SceneLights.jsx         # Three.js lighting setup
+│   │   ├── Reticle.jsx             # Custom crosshair cursor
+│   │   ├── Loader.jsx              # Loading screen
+│   │   └── BrandMark.jsx           # Logo component
+│   ├── data/
+│   │   ├── features.js             # Feature card content
+│   │   ├── modelMetrics.js         # Spec values
+│   │   ├── sceneStages.js          # Scroll stage pose definitions
+│   │   └── skins.js                # Finish/color definitions
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css                   # Design tokens (CSS variables)
+├── index.html
+├── vite.config.js
+└── package.json
+```
 
-Open `src/components/HeroFeatureScene.jsx` and look at the `STAGES` object.
-Each stage has:
+---
 
-- `lx, ly` — the point on the rifle (in the model's local space) to bring to
-  the center of the frame.
-- `scale` — how "zoomed in" that stage is.
-- `rot` — the rifle's rotation at that stage.
-- `offset` — a screen-space nudge so the text panel has room next to it.
+## 🎬 How the Scroll Animation Works
 
-These were tuned against the model's bounding box (roughly a 9.8-unit-long
-mesh along X), so nudge the numbers and refresh to taste — there's no exact
-science to it, it's art-directed like a product shoot.
+The hero section is a **pinned GSAP ScrollTrigger** scene. As the user scrolls, the camera appears to move through different parts of the rifle — optic → barrel → stock/trigger.
 
-## Swapping in your own model
+This is controlled via `STAGES` in `src/data/sceneStages.js`:
 
-Replace `public/models/sniper_rifle.glb`. If your file is large, it's worth
-compressing it first:
+```js
+{
+  lx, ly,    // Point on the rifle (local model space) to center in frame
+  scale,     // Zoom level for this stage
+  rot,       // Rifle rotation [x, y, z] in radians
+  offset,    // Screen-space nudge to make room for the text panel
+}
+```
+
+> The model spans roughly **9.8 units** along the X axis. Tweak these values and refresh — it's art-directed like a product photoshoot, not an exact science.
+
+`scrub: 1` on the ScrollTrigger is what gives the motion its characteristic smooth lag/momentum feel.
+
+---
+
+## 🎨 Customizing Finishes
+
+The **Customize** section renders an independent orbit-controlled viewer. Each finish is defined in `src/data/skins.js`:
+
+```js
+{
+  name: "Gunmetal",
+  color: "#3a3a3a",
+  texture: "/604A30_DC9065_212C14_AC9C92.jpg"
+}
+```
+
+Clicking a swatch triggers a GSAP tween on the material's color for a smooth cross-fade between finishes.
+
+---
+
+## 🔄 Swapping the 3D Model
+
+Replace `public/models/sniper_rifle.glb` with your own model. For best performance, compress it first:
 
 ```bash
 npx @gltf-transform/cli optimize input.glb public/models/sniper_rifle.glb \
   --texture-size 1024 --texture-compress webp --compress false
 ```
 
-(The bundled model was optimized this way: 17.8 MB → ~290 KB.)
+> **Note:** The finish tinting in `CustomizeSection.jsx` currently targets the **first mesh's material**. If your model has multiple materials, extend `RifleModel.jsx`'s `onMaterialReady` callback to return and tint all of them.
 
-If your model has multiple materials/meshes rather than one merged mesh, the
-finish tinting in `CustomizeSection.jsx` currently grabs the *first* mesh's
-material — extend `RifleModel.jsx`'s `onMaterialReady` callback to return a
-list of materials and tint all of them instead.
+---
 
-## Notes
+## 🧩 Design Tokens
 
-- Fonts: Big Shoulders Display (headlines), Inter (body), Space Mono (data
-  readouts) — loaded from Google Fonts in `index.html`.
-- Colors and other tokens live in `src/index.css` (`:root` variables).
-- Reduced motion: the pinned scroll animation currently doesn't check
-  `prefers-reduced-motion`; if that matters for your audience, gate the
-  `ScrollTrigger` creation in `HeroFeatureScene.jsx` behind a media query
-  check and fall back to a static hero image/pose.
+All colors, spacing, and typographic values are managed as CSS custom properties in `src/index.css`:
+
+```css
+:root {
+  --color-bg: #0a0a0a;
+  --color-accent: #c8a96e;
+  /* ... */
+}
+```
+
+Fonts used:
+- **Big Shoulders Display** — headlines
+- **Inter** — body text
+- **Space Mono** — data readouts & numerical values
+
+---
+
+## ♿ Accessibility Note
+
+The pinned scroll animation currently does **not** respect `prefers-reduced-motion`. If your audience includes users sensitive to motion, gate the `ScrollTrigger` creation in `HeroFeatureScene.jsx` behind a media query check and fall back to a static hero pose.
+
+---
+
+## 📄 License
+
+MIT — feel free to use this as a template for your own 3D product showcases.
+
+---
+
+<div align="center">
+  <strong>MK-VII Precision Platform</strong> · Built with ❤️ using React + Three.js + GSAP
+</div>
