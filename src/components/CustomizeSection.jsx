@@ -94,7 +94,7 @@ export default function CustomizeSection() {
             </div>
             <div className="bg-gunmetal-950/80 p-3">
               <span className="block text-steel-dim">Surface</span>
-              <span className="mt-1 block text-bone">Matcap coat</span>
+              <span className="mt-1 block text-bone">PBR coating</span>
             </div>
           </div>
         </div>
